@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AccuBooks Pro — UD ES PRIMA</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#F0EDE8;--card:#FAFAF7;--surface:#FFFFFF;
+  --navy:#1A2744;--blue:#2952A3;--blue-lt:#E8EDF8;
+  --green:#1A6B3C;--green-lt:#E6F4EC;
+  --red:#B91C1C;--red-lt:#FEE2E2;
+  --amber:#92400E;--amber-lt:#FEF3C7;
+  --text:#1A1A1A;--muted:#6B7280;--border:#D8D4CC;
+  --mono:'IBM Plex Mono',monospace;
+  --sans:'DM Sans',sans-serif;
+  --serif:'DM Serif Display',serif;
+  --radius:8px;
+  --shadow:0 1px 3px rgba(0,0,0,.08),0 4px 12px rgba(0,0,0,.05);
+}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:13px;min-height:100vh;display:flex;flex-direction:column}
+
+/* TOP BAR */
+.topbar{background:var(--navy);color:#fff;display:flex;align-items:center;padding:0 20px;height:52px;gap:16px;flex-shrink:0}
+.topbar .logo{font-family:var(--serif);font-size:18px;letter-spacing:-.3px;color:#fff;white-space:nowrap}
+.topbar .logo span{color:#93C5FD;font-family:var(--mono);font-size:11px;display:block;letter-spacing:.5px;margin-top:-3px}
+.topbar .co-name{font-size:12px;color:#93C5FD;font-weight:500;padding:4px 10px;background:rgba(255,255,255,.08);border-radius:4px;white-space:nowrap}
+.topbar .period{font-family:var(--mono);font-size:11px;color:#CBD5E1;margin-left:auto}
+.topbar .badge{font-size:10px;background:#1D6745;color:#A7F3D0;padding:2px 8px;border-radius:20px;font-weight:600;letter-spacing:.3px}
+
+/* LAYOUT */
+.layout{display:flex;flex:1;overflow:hidden}
+
+/* SIDEBAR */
+.sidebar{width:200px;background:var(--card);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
+.sidebar-section{padding:12px 12px 4px;font-size:10px;font-weight:600;color:var(--muted);letter-spacing:.8px;text-transform:uppercase}
+.nav-item{display:flex;align-items:center;gap:8px;padding:8px 14px;cursor:pointer;border-radius:6px;margin:1px 6px;font-size:12.5px;color:var(--muted);transition:.15s}
+.nav-item:hover{background:var(--blue-lt);color:var(--blue)}
+.nav-item.active{background:var(--navy);color:#fff;font-weight:500}
+.nav-item .icon{width:16px;height:16px;flex-shrink:0;opacity:.7}
+.nav-item.active .icon{opacity:1}
+.nav-divider{height:1px;background:var(--border);margin:8px 12px}
+
+/* CONTENT */
+.content{flex:1;overflow-y:auto;padding:20px}
+
+/* PANELS */
+.panel{display:none}
+.panel.active{display:block}
+
+/* PAGE HEADER */
+.page-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px}
+.page-hdr h1{font-family:var(--serif);font-size:22px;color:var(--navy);font-weight:400;line-height:1.2}
+.page-hdr .sub{font-size:11.5px;color:var(--muted);margin-top:3px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;border:none;transition:.15s;font-family:var(--sans)}
+.btn-primary{background:var(--navy);color:#fff}.btn-primary:hover{background:#243461}
+.btn-secondary{background:var(--card);color:var(--text);border:1px solid var(--border)}.btn-secondary:hover{background:var(--bg)}
+.btn-print{background:var(--green);color:#fff}.btn-print:hover{background:#155e32}
+.btn-sm{padding:5px 10px;font-size:11px}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:16px;box-shadow:var(--shadow)}
+.card-header{font-size:12px;font-weight:600;color:var(--navy);text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+
+/* STAT CARDS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow)}
+.stat-card .label{font-size:10.5px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.4px}
+.stat-card .value{font-family:var(--mono);font-size:15px;font-weight:500;margin-top:4px;color:var(--navy)}
+.stat-card .value.profit{color:var(--green)}
+.stat-card .sub{font-size:10.5px;color:var(--muted);margin-top:2px}
+.stat-card .trend{display:inline-block;font-size:10px;padding:2px 6px;border-radius:12px;margin-top:4px}
+.trend-up{background:var(--green-lt);color:var(--green)}
+.trend-dn{background:var(--red-lt);color:var(--red)}
+
+/* FORM FIELDS */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 20px}
+.form-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px 16px}
+.field{display:flex;flex-direction:column;gap:4px}
+.field label{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+.field input,.field select,.field textarea{padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-size:12.5px;font-family:var(--sans);background:var(--bg);color:var(--text);outline:none;transition:.15s}
+.field input:focus,.field select:focus{border-color:var(--blue);background:#fff}
+.field input[readonly]{background:var(--bg);color:var(--muted);cursor:default}
+
+/* TABLES */
+.tbl-wrap{overflow-x:auto;border-radius:var(--radius);border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{background:var(--navy);color:#fff;padding:9px 12px;text-align:left;font-weight:500;font-size:11px;letter-spacing:.3px;white-space:nowrap}
+td{padding:8px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--blue-lt)}
+.tr-total td{background:var(--blue-lt)!important;font-weight:600;border-top:2px solid var(--navy)}
+.tr-section td{background:#F5F3EE;font-weight:600;font-size:11px;color:var(--navy);text-transform:uppercase;letter-spacing:.3px}
+.mono{font-family:var(--mono);font-size:11.5px}
+.num{text-align:right;font-family:var(--mono);font-size:11.5px;white-space:nowrap}
+.num-neg{color:var(--red)}
+.num-pos{color:var(--green)}
+.tag{display:inline-block;padding:2px 7px;border-radius:12px;font-size:10px;font-weight:500;white-space:nowrap}
+.tag-paid{background:var(--green-lt);color:var(--green)}
+.tag-pend{background:var(--amber-lt);color:var(--amber)}
+.tag-dr{background:#EFF6FF;color:#1E40AF}
+.tag-cr{background:#F0FDF4;color:#166534}
+
+/* REPORT STYLES */
+.report-wrap{background:#fff;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.report-head{background:var(--navy);color:#fff;padding:24px 28px;text-align:center}
+.report-head .co{font-family:var(--serif);font-size:20px;font-weight:400}
+.report-head .rpt{font-size:13px;color:#93C5FD;margin-top:4px;text-transform:uppercase;letter-spacing:1px}
+.report-head .per{font-size:11.5px;color:#CBD5E1;margin-top:3px}
+.report-body{padding:0 28px 24px}
+.rpt-section{margin-top:18px}
+.rpt-section-title{font-size:11px;font-weight:600;color:var(--navy);text-transform:uppercase;letter-spacing:.8px;border-bottom:2px solid var(--navy);padding-bottom:4px;margin-bottom:8px}
+.rpt-row{display:grid;grid-template-columns:1fr auto auto;gap:0 20px;padding:4px 0;align-items:center;border-bottom:1px dashed #EEE}
+.rpt-row:last-child{border-bottom:none}
+.rpt-row.indent-1{padding-left:16px}
+.rpt-row.indent-2{padding-left:32px;font-size:11.5px;color:var(--muted)}
+.rpt-row.sub-total{border-top:1px solid var(--border);border-bottom:1px solid var(--border);font-weight:600;background:#FAFAFA;padding:5px 0}
+.rpt-row.grand-total{background:var(--navy);color:#fff;padding:8px 12px;border-radius:6px;margin-top:8px;font-weight:600}
+.rpt-row.grand-total .rpt-amt{color:#93C5FD}
+.rpt-label{font-size:12px}
+.rpt-amt{font-family:var(--mono);font-size:12px;text-align:right;min-width:130px}
+.rpt-amt2{font-family:var(--mono);font-size:12px;text-align:right;min-width:130px;color:var(--muted)}
+.rpt-divider{border:none;border-top:1px solid var(--border);margin:12px 0}
+.profit-box{background:var(--green-lt);border:1px solid #86EFAC;border-radius:8px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;margin-top:16px}
+.profit-box .plabel{font-size:13px;font-weight:600;color:var(--green)}
+.profit-box .pamount{font-family:var(--mono);font-size:16px;font-weight:600;color:var(--green)}
+
+/* PRINT area */
+.print-area{display:none}
+@media print{
+  .topbar,.sidebar,.page-hdr .btn-print,.nav-tabs{display:none!important}
+  .layout{display:block}
+  .content{padding:0}
+  .print-area{display:block}
+  .report-wrap{border:none;border-radius:0}
+}
+
+/* TABS */
+.nav-tabs{display:flex;gap:2px;margin-bottom:16px;border-bottom:1px solid var(--border);padding-bottom:-1px}
+.tab-btn{padding:7px 14px;font-size:12px;border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;color:var(--muted);font-family:var(--sans);transition:.15s}
+.tab-btn.active{color:var(--navy);border-bottom-color:var(--navy);font-weight:500}
+.tab-content{display:none}.tab-content.active{display:block}
+
+/* PROGRESS STEPS */
+.steps{display:flex;gap:0;margin-bottom:20px;overflow:hidden;border-radius:8px;border:1px solid var(--border)}
+.step{flex:1;padding:10px 14px;background:var(--surface);text-align:center;position:relative;font-size:11px;color:var(--muted);border-right:1px solid var(--border)}
+.step:last-child{border-right:none}
+.step.done{background:var(--green-lt);color:var(--green)}
+.step.active{background:var(--navy);color:#fff}
+.step .n{font-weight:700;display:block;font-size:13px;margin-bottom:2px}
+.step.done .n::before{content:"✓ "}
+
+/* Status bar */
+.status-bar{background:var(--card);border-top:1px solid var(--border);padding:6px 20px;display:flex;align-items:center;gap:20px;font-size:11px;color:var(--muted);flex-shrink:0}
+.status-dot{width:6px;height:6px;border-radius:50%;background:#22c55e;display:inline-block;margin-right:4px}
+
+/* Balance chip */
+.balanced-chip{display:inline-flex;align-items:center;gap:5px;background:var(--green-lt);color:var(--green);font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px}
+.unbal-chip{background:var(--red-lt);color:var(--red)}
+
+/* 2-col layout */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+
+/* Entry form */
+.entry-header{background:var(--navy);color:#fff;padding:12px 16px;border-radius:var(--radius) var(--radius) 0 0;display:flex;justify-content:space-between;align-items:center;font-size:12.5px;font-weight:500}
+.entry-body{background:var(--surface);border:1px solid var(--border);border-top:none;border-radius:0 0 var(--radius) var(--radius);padding:14px}
+
+/* Tooltip chips */
+.chip{display:inline-block;font-family:var(--mono);font-size:10px;padding:1px 6px;background:var(--blue-lt);color:var(--blue);border-radius:4px;margin-left:4px}
+
+.alert-info{background:var(--blue-lt);border:1px solid #BFDBFE;border-radius:6px;padding:10px 14px;font-size:12px;color:#1e3a8a;margin-bottom:14px}
+.alert-ok{background:var(--green-lt);border:1px solid #86EFAC;border-radius:6px;padding:10px 14px;font-size:12px;color:var(--green);margin-bottom:14px}
+
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="logo">AccuBooks Pro <span>v4.2 — ACCOUNTING SYSTEM</span></div>
+  <div class="co-name">PT / UD Mode &nbsp;|&nbsp; UD ES PRIMA</div>
+  <div style="font-size:11px;color:#94A3B8">Fiscal Year: 01 Jan – 31 Dec 2025</div>
+  <div class="period" style="margin-left:auto">Periode Aktif: Desember 2025</div>
+  <div class="badge">DATA VERIFIED</div>
+</div>
+
+<div class="layout">
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div style="padding:14px 14px 6px;display:flex;align-items:center;gap:8px">
+    <div style="width:30px;height:30px;background:var(--navy);border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:var(--serif);color:#93C5FD;font-size:14px">EP</div>
+    <div><div style="font-weight:600;font-size:12px;color:var(--navy)">UD ES PRIMA</div><div style="font-size:10px;color:var(--muted)">Perdagangan Kulkas</div></div>
+  </div>
+  <div class="nav-divider"></div>
+
+  <div class="sidebar-section">Setup</div>
+  <div class="nav-item active" onclick="showPanel('dashboard')">
+    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+    Dashboard
+  </div>
+  <div class="nav-item" onclick="showPanel('company')">
+    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-2 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+    Profil Perusahaan
+  </div>
+  <div class="nav-item" onclick="showPanel('accounts')">
+    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+    Daftar Akun
+  </div>
+  <div class="nav-item" onclick="showPanel('opening')">
+    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+    Saldo Awal
+  </div>
+
+  <div class="nav-divider"></div>
+  <div class="sidebar-section">Transaksi</div>
+  <div class="nav-item" onclick="showPanel('transactions')">
+    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/></svg>
+    Input Transaksi
+  </div>
+  <div class="nav-item" onclick="showPanel('adjusting')">
+    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+    Data Penyesuaian
+  </div>
+
+  <div class="nav-divider"></div>
+  <div class="sidebar-section">Laporan</div>
+  <div class="nav-item" onclick="showPanel('rpt-lr')">
+    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+    Laporan Laba Rugi
+  </div>
+  <div class="nav-item" onclick="showPanel('rpt-neraca')">
+    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/></svg>
+    Neraca (Balance Sheet)
+  </div>
+  <div class="nav-item" onclick="showPanel('rpt-equity')">
+    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+    Perubahan Ekuitas
+  </div>
+  <div class="nav-item" onclick="showPanel('rpt-cf')">
+    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+    Laporan Arus Kas
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+<!-- ===== DASHBOARD ===== -->
+<div id="panel-dashboard" class="panel active">
+  <div class="page-hdr">
+    <div><h1>Dashboard</h1><div class="sub">Ringkasan Keuangan — Desember 2025</div></div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-secondary btn-sm" onclick="showPanel('rpt-lr')">📊 Lihat Laporan</button>
+    </div>
+  </div>
+
+  <div class="steps">
+    <div class="step done"><span class="n">1</span>Profil Perusahaan</div>
+    <div class="step done"><span class="n">2</span>Daftar Akun</div>
+    <div class="step done"><span class="n">3</span>Saldo Awal</div>
+    <div class="step done"><span class="n">4</span>Kode Pajak</div>
+    <div class="step done"><span class="n">5</span>Input Transaksi</div>
+    <div class="step done"><span class="n">6</span>Data Penyesuaian</div>
+    <div class="step active"><span class="n">7</span>Cetak Laporan</div>
+  </div>
+
+  <div class="alert-ok">✅ Semua 25 transaksi + 5 jurnal penyesuaian telah diinput. Neraca seimbang. Laporan siap dicetak.</div>
+
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="label">Total Penjualan Bersih</div>
+      <div class="value">Rp 3,38 M</div>
+      <div class="sub">Gross Rp3,42 M setelah retur & diskon</div>
+      <div class="trend trend-up">▲ Vs Saldo Awal</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Laba Kotor</div>
+      <div class="value">Rp 846 Jt</div>
+      <div class="sub">Margin 25,00%</div>
+      <div class="trend trend-up">▲ Sehat</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Laba Bersih</div>
+      <div class="value profit">Rp 575,8 Jt</div>
+      <div class="sub">Margin bersih 17,0%</div>
+      <div class="trend trend-up">▲ PROFIT</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Kas di Bank (Akhir)</div>
+      <div class="value">Rp 733,3 Jt</div>
+      <div class="sub">+Kas Kecil Rp150.000</div>
+      <div class="trend trend-up">▲ Likuid</div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <div class="card-header">Ringkasan Transaksi Desember 2025</div>
+      <table><thead><tr><th>Jenis Jurnal</th><th style="text-align:center">Entri</th><th class="num">Total (Rp)</th></tr></thead>
+      <tbody>
+        <tr><td>Jurnal Pembelian</td><td style="text-align:center">3</td><td class="num">344.203.000</td></tr>
+        <tr><td>Jurnal Penjualan</td><td style="text-align:center">5</td><td class="num">399.384.000</td></tr>
+        <tr><td>Jurnal Kas Masuk</td><td style="text-align:center">6</td><td class="num">676.816.940</td></tr>
+        <tr><td>Jurnal Kas Keluar</td><td style="text-align:center">6</td><td class="num">633.240.000</td></tr>
+        <tr><td>Jurnal Umum</td><td style="text-align:center">2</td><td class="num">13.507.000</td></tr>
+        <tr><td>Jurnal Kas Kecil</td><td style="text-align:center">3</td><td class="num">1.850.000</td></tr>
+        <tr class="tr-total"><td>Total</td><td style="text-align:center;font-weight:600">25</td><td class="num">—</td></tr>
+      </tbody></table>
+    </div>
+    <div class="card">
+      <div class="card-header">Status Akun Piutang (31 Des)</div>
+      <table><thead><tr><th>Pelanggan</th><th class="num">Saldo (Rp)</th><th style="text-align:center">Status</th></tr></thead>
+      <tbody>
+        <tr><td>Toko Arctiq</td><td class="num">89.728.000</td><td style="text-align:center"><span class="tag tag-pend">Baru</span></td></tr>
+        <tr><td>Toko Frostora</td><td class="num">—</td><td style="text-align:center"><span class="tag tag-paid">Lunas</span></td></tr>
+        <tr><td>Toko Coolify</td><td class="num">155.405.000</td><td style="text-align:center"><span class="tag tag-pend">Baru</span></td></tr>
+        <tr><td>Toko Sejuk Abadi</td><td class="num">61.375.000</td><td style="text-align:center"><span class="tag tag-pend">Baru</span></td></tr>
+        <tr class="tr-total"><td>Total A/R</td><td class="num">306.508.000</td><td></td></tr>
+      </tbody></table>
+      <div style="margin-top:10px;font-size:11px;color:var(--muted)">* Frostora: invoice 01/SJ selesai dilunasi 15 Des + 30 Des</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">Verifikasi Neraca Saldo — Trial Balance Check</div>
+    <div class="three-col">
+      <div style="text-align:center;padding:10px">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:4px">TOTAL DEBIT</div>
+        <div style="font-family:var(--mono);font-size:15px;font-weight:600;color:var(--navy)">Rp 4.479.321.738</div>
+        <div style="font-size:10px;color:var(--muted)">Sebelum Penyesuaian</div>
+      </div>
+      <div style="text-align:center;padding:10px;display:flex;flex-direction:column;align-items:center;justify-content:center">
+        <div class="balanced-chip">✓ SEIMBANG</div>
+        <div style="font-size:10.5px;color:var(--muted);margin-top:6px">Debit = Kredit</div>
+      </div>
+      <div style="text-align:center;padding:10px">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:4px">TOTAL KREDIT</div>
+        <div style="font-family:var(--mono);font-size:15px;font-weight:600;color:var(--navy)">Rp 4.479.321.738</div>
+        <div style="font-size:10px;color:var(--muted)">Sebelum Penyesuaian</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PROFIL PERUSAHAAN ===== -->
+<div id="panel-company" class="panel">
+  <div class="page-hdr"><div><h1>Profil Perusahaan</h1><div class="sub">Data Identitas & Kebijakan Akuntansi</div></div></div>
+  <div class="alert-info">ℹ️ Langkah 1 dari 7 — Isi profil perusahaan sesuai dokumen soal sebelum memulai pencatatan.</div>
+  <div class="card">
+    <div class="card-header">Identitas Perusahaan</div>
+    <div class="form-grid">
+      <div class="field"><label>Nama Perusahaan</label><input readonly value="UD ES PRIMA"></div>
+      <div class="field"><label>Jenis Usaha</label><input readonly value="Perdagangan Perseorangan (Sole Proprietorship)"></div>
+      <div class="field"><label>Bidang Usaha</label><input readonly value="Jual Beli Kulkas (Perdagangan Barang Dagang)"></div>
+      <div class="field"><label>NPWP</label><input readonly value="02.343.543.8-212.000"></div>
+      <div class="field"><label>Pemilik</label><input readonly value="Agus Santoso, MM"></div>
+      <div class="field"><label>No. Telepon</label><input readonly value="(021) 832321"></div>
+      <div class="field"><label>Alamat</label><input readonly value="Jl. Nusa Indah No. 01, Jakarta Utara"></div>
+      <div class="field"><label>Email</label><input readonly value="esprima77@gmail.com"></div>
+      <div class="field"><label>No. Rekening Bank</label><input readonly value="1100-12-2345-6 — Bank SMK, KC-Jl. Nusa Indah Jakarta"></div>
+      <div class="field"><label>No. Faksimili</label><input readonly value="(021) 832321"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header">Kebijakan Akuntansi</div>
+    <div class="form-grid-3">
+      <div class="field"><label>Periode Akuntansi</label><input readonly value="1 Januari – 31 Desember 2025"></div>
+      <div class="field"><label>Basis Pencatatan</label><input readonly value="Akrual Basis (Accrual)"></div>
+      <div class="field"><label>Mata Uang</label><input readonly value="Rupiah (IDR) — Single Currency"></div>
+      <div class="field"><label>Sistem Pencatatan</label><input readonly value="Sistem Berpasangan (Double Entry)"></div>
+      <div class="field"><label>Sistem Persediaan</label><input readonly value="Perpetual (Terus-menerus)"></div>
+      <div class="field"><label>Metode Penilaian Persediaan</label><input readonly value="Moving Average (Rata-rata Bergerak)"></div>
+      <div class="field"><label>Metode Penyusutan</label><input readonly value="Garis Lurus (Straight Line Method)"></div>
+      <div class="field"><label>Frekuensi Penyusutan</label><input readonly value="Setiap Akhir Bulan"></div>
+      <div class="field"><label>Penghapusan Piutang</label><input readonly value="Metode Tidak Langsung (Allowance Method)"></div>
+      <div class="field"><label>Termin Penjualan</label><input readonly value="2/10, N/30 — Denda Keterlambatan 1%"></div>
+      <div class="field"><label>Termin Pembelian</label><input readonly value="N/45"></div>
+      <div class="field"><label>Batas Kas Kecil</label><input readonly value="≤ Rp 2.000.000 — Dana Tidak Tetap"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header">Kode Pajak (Tax Codes)</div>
+    <div class="tbl-wrap"><table><thead><tr><th>Kode</th><th>Nama Pajak</th><th>Tarif</th><th>Dasar Penghitungan</th><th>Akun</th></tr></thead>
+    <tbody>
+      <tr><td><span class="chip">PPh-F</span></td><td>PPh Final Pasal 4(2) — PP 55/2022</td><td class="mono">0,5%</td><td>Peredaran Bruto (Sales of Merchandise)</td><td class="mono">91003 / 21203</td></tr>
+      <tr><td><span class="chip">PPN-N</span></td><td>PPN (sudah termasuk dalam harga beli)</td><td class="mono">11%</td><td>Harga Pembelian dari Supplier</td><td>Incl. in 11301</td></tr>
+    </tbody></table></div>
+    <div style="margin-top:10px;font-size:11.5px;color:var(--muted);background:var(--amber-lt);border-radius:6px;padding:8px 12px">
+      <strong>Catatan PPh Final:</strong> Basis = Sales of Merchandise saja (akun 41101), <em>tidak termasuk</em> Freight Collected (41104).
+      Alasan: PP 55/2022 menggunakan "peredaran bruto dari usaha pokok". Usaha pokok UD ES Prima adalah perdagangan kulkas; Freight Collected (41104) merupakan pendapatan insidental atas jasa pengiriman — bukan bagian dari omzet pokok perdagangan barang.
+    </div>
+  </div>
+</div>
+
+<!-- ===== DAFTAR AKUN ===== -->
+<div id="panel-accounts" class="panel">
+  <div class="page-hdr"><div><h1>Daftar Akun (Chart of Accounts)</h1><div class="sub">Langkah 2 — Setup & Entri Saldo Awal Akun</div></div></div>
+  <div class="tbl-wrap">
+  <table><thead><tr><th>No. Akun</th><th>Nama Akun</th><th>Fungsi</th><th style="text-align:center">Tipe</th><th style="text-align:center">Normal</th></tr></thead>
+  <tbody id="coa-body"></tbody></table></div>
+</div>
+
+<!-- ===== SALDO AWAL ===== -->
+<div id="panel-opening" class="panel">
+  <div class="page-hdr"><div><h1>Saldo Awal (Opening Balances)</h1><div class="sub">Per 30 November 2025 — Dasar Periode Desember</div></div></div>
+  <div class="alert-ok">✅ Saldo awal diverifikasi. Total Debit = Total Kredit = Rp 4.362.873.138</div>
+  <div class="tbl-wrap">
+  <table><thead><tr><th>No. Akun</th><th>Nama Akun</th><th class="num">Debit (Rp)</th><th class="num">Kredit (Rp)</th></tr></thead>
+  <tbody id="ob-body"></tbody>
+  <tfoot><tr class="tr-total"><td></td><td><strong>TOTAL</strong></td><td class="num" id="ob-total-d"></td><td class="num" id="ob-total-k"></td></tr></tfoot>
+  </table></div>
+</div>
+
+<!-- ===== INPUT TRANSAKSI ===== -->
+<div id="panel-transactions" class="panel">
+  <div class="page-hdr"><div><h1>Input Transaksi</h1><div class="sub">Langkah 5 — 25 Transaksi Desember 2025</div></div></div>
+  <div class="nav-tabs">
+    <button class="tab-btn active" onclick="switchTab(this,'tab-purchase')">📦 Pembelian (3)</button>
+    <button class="tab-btn" onclick="switchTab(this,'tab-sales')">🏷️ Penjualan (5)</button>
+    <button class="tab-btn" onclick="switchTab(this,'tab-cashrcv')">💰 Kas Masuk (6)</button>
+    <button class="tab-btn" onclick="switchTab(this,'tab-cashpay')">💸 Kas Keluar (6)</button>
+    <button class="tab-btn" onclick="switchTab(this,'tab-general')">📋 Umum + KK (5)</button>
+  </div>
+
+  <!-- PURCHASE -->
+  <div id="tab-purchase" class="tab-content active">
+    <div class="entry-header"><span>JURNAL PEMBELIAN — Purchase Journal</span><span class="chip" style="color:#93C5FD">Debit: 11301 | Kredit: 21201</span></div>
+    <div class="entry-body">
+    <div class="tbl-wrap"><table><thead><tr><th>Tgl</th><th>No. Faktur</th><th>Pemasok</th><th>Item</th><th class="num">Jumlah</th><th class="num">Harga/unit</th><th class="num">Total (Rp)</th></tr></thead>
+    <tbody>
+      <tr><td rowspan="2">04/12</td><td rowspan="2" class="mono">21/PJ/KN</td><td rowspan="2">PT Kulkas Nusantara</td><td>K-01 Kulkas E537</td><td class="num">26</td><td class="num">1.940.000</td><td class="num">50.440.000</td></tr>
+      <tr><td>K-02 Kulkas E821</td><td class="num">25</td><td class="num">2.417.000</td><td class="num">60.425.000</td></tr>
+      <tr style="background:#f9f7f0"><td colspan="6" style="text-align:right;font-weight:600;font-size:11px;color:var(--muted)">Sub-total Faktur 21/PJ/KN:</td><td class="num" style="font-weight:600">110.865.000</td></tr>
+      <tr><td rowspan="2">13/12</td><td rowspan="2" class="mono">41/PM</td><td rowspan="2">PT Pendingin Makmur</td><td>K-01 Kulkas E537</td><td class="num">21</td><td class="num">1.940.000</td><td class="num">40.740.000</td></tr>
+      <tr><td>K-02 Kulkas E821</td><td class="num">24</td><td class="num">2.417.000</td><td class="num">58.008.000</td></tr>
+      <tr style="background:#f9f7f0"><td colspan="6" style="text-align:right;font-weight:600;font-size:11px;color:var(--muted)">Sub-total Faktur 41/PM:</td><td class="num" style="font-weight:600">98.748.000</td></tr>
+      <tr><td rowspan="2">22/12</td><td rowspan="2" class="mono">92/DS</td><td rowspan="2">PT Dingin Sejuk</td><td>K-01 Kulkas E537</td><td class="num">32</td><td class="num">1.940.000</td><td class="num">62.080.000</td></tr>
+      <tr><td>K-02 Kulkas E821</td><td class="num">30</td><td class="num">2.417.000</td><td class="num">72.510.000</td></tr>
+      <tr style="background:#f9f7f0"><td colspan="6" style="text-align:right;font-weight:600;font-size:11px;color:var(--muted)">Sub-total Faktur 92/DS:</td><td class="num" style="font-weight:600">134.590.000</td></tr>
+      <tr class="tr-total"><td colspan="6"><strong>TOTAL PEMBELIAN KREDIT</strong></td><td class="num"><strong>344.203.000</strong></td></tr>
+    </tbody></table></div>
+    <div style="margin-top:10px;font-size:11px;color:var(--muted)">* Harga termasuk PPN — dicatat langsung ke Merchandise Inventory (11301). Termin N/45.</div>
+    </div>
+  </div>
+
+  <!-- SALES -->
+  <div id="tab-sales" class="tab-content">
+    <div class="entry-header"><span>JURNAL PENJUALAN — Sales Journal</span><span class="chip" style="color:#93C5FD">Debit: 11201 + 51101 | Kredit: 41101 + 41104 + 11301</span></div>
+    <div class="entry-body">
+    <div class="tbl-wrap"><table><thead><tr><th>Tgl</th><th>Faktur</th><th>Pelanggan</th><th class="num">A/R Debit</th><th class="num">COGS Debit</th><th class="num">Sales Kredit</th><th class="num">Freight Kr.</th><th class="num">Inv. Kredit</th></tr></thead>
+    <tbody>
+      <tr><td>07/12</td><td class="mono">01/SJ</td><td>Toko Frostora</td><td class="num">92.876.000</td><td class="num">84.246.000</td><td class="num">92.676.000</td><td class="num">200.000</td><td class="num">84.246.000</td></tr>
+      <tr><td>11/12</td><td class="mono">02/SJ</td><td>Toko Sejuk Abadi</td><td class="num">61.375.000</td><td class="num">55.655.000</td><td class="num">61.225.000</td><td class="num">150.000</td><td class="num">55.655.000</td></tr>
+      <tr><td>14/12</td><td class="mono">03/SJ</td><td>Toko Coolify</td><td class="num">100.348.000</td><td class="num">91.020.000</td><td class="num">100.128.000</td><td class="num">220.000</td><td class="num">91.020.000</td></tr>
+      <tr><td>20/12</td><td class="mono">04/SJ</td><td>Toko Arctiq</td><td class="num">89.728.000</td><td class="num">81.320.000</td><td class="num">89.458.000</td><td class="num">270.000</td><td class="num">81.320.000</td></tr>
+      <tr><td>25/12</td><td class="mono">05/SJ</td><td>Toko Coolify</td><td class="num">55.057.000</td><td class="num">49.867.000</td><td class="num">54.857.000</td><td class="num">200.000</td><td class="num">49.867.000</td></tr>
+      <tr class="tr-total"><td colspan="3"><strong>TOTAL</strong></td><td class="num"><strong>399.384.000</strong></td><td class="num"><strong>362.108.000</strong></td><td class="num"><strong>398.344.000</strong></td><td class="num"><strong>1.040.000</strong></td><td class="num"><strong>362.108.000</strong></td></tr>
+    </tbody></table></div>
+    <div style="margin-top:10px;font-size:11px;color:var(--muted)">* Harga jual: K-01=Rp2.134.000 | K-02=Rp2.659.000. COGS berbasis Moving Average: K-01=Rp1.940.000 | K-02=Rp2.417.000</div>
+    </div>
+  </div>
+
+  <!-- CASH RECEIPT -->
+  <div id="tab-cashrcv" class="tab-content">
+    <div class="entry-header"><span>JURNAL KAS MASUK — Cash Receipt Journal</span></div>
+    <div class="entry-body">
+    <div class="tbl-wrap"><table><thead><tr><th>Tgl</th><th>No.Bukti</th><th>Dari / Keterangan</th><th class="num">Dr: Cash (11101)</th><th>Akun Lain (Dr/Cr)</th><th class="num">Jml Akun Lain</th><th class="num">Cr: A/R (11201)</th></tr></thead>
+    <tbody>
+      <tr><td>06/12</td><td class="mono">01/BKM</td><td>Toko Arctiq — Lunasi Pjt 29 Nov<br><small style="color:var(--muted)">Diskon 2%×183.150.000 = dalam periode 2/10</small></td><td class="num">179.487.000</td><td><span class="tag tag-dr">41103</span> Sales Discount</td><td class="num">3.663.000</td><td class="num">183.150.000</td></tr>
+      <tr><td>15/12</td><td class="mono">02/BKM</td><td>Toko Frostora — Lunasi Pjt 07 Des (net retur)<br><small style="color:var(--muted)">Diskon 2%×88.083.000; AR=92.876.000−4.793.000</small></td><td class="num">86.321.340</td><td><span class="tag tag-dr">41103</span> Sales Discount</td><td class="num">1.761.660</td><td class="num">88.083.000</td></tr>
+      <tr><td>21/12</td><td class="mono">03/BKM</td><td>Toko Coolify — Lunasi Pjt 30 Nov<br><small style="color:var(--muted)">Lewat masa diskon (30 Nov+21hr &gt; 10hr). Tanpa diskon.</small></td><td class="num">159.840.000</td><td>—</td><td class="num">—</td><td class="num">159.840.000</td></tr>
+      <tr><td>26/12</td><td class="mono">01/NTK</td><td>Penjualan Tunai (Cash Sale)<br><small style="color:var(--muted)">1×K-01 + 1×K-02; Dr Cash / Cr Sales + Dr COGS / Cr Inventory</small></td><td class="num">4.793.000</td><td><span class="tag tag-dr">51101+11301</span> COGS/Inv</td><td class="num">4.357.000</td><td class="num">—</td></tr>
+      <tr><td>28/12</td><td class="mono">04/BKM</td><td>Toko Sejuk Abadi — Lunasi Pjt 22 Nov<br><small style="color:var(--muted)" style="color:var(--red)">⚠ TERLAMBAT (22 Nov+28hr &gt; N/30). Denda 1%×106.560.000 = 1.065.600</small></td><td class="num">107.625.600</td><td><span class="tag tag-cr">81102</span> Late Fees</td><td class="num">1.065.600</td><td class="num">106.560.000</td></tr>
+      <tr><td>30/12</td><td class="mono">05/BKM</td><td>Toko Frostora — Lunasi Pjt 30 Nov<br><small style="color:var(--muted)">30 Nov+30hr = tepat batas N/30. Tanpa diskon, tanpa denda.</small></td><td class="num">138.750.000</td><td>—</td><td class="num">—</td><td class="num">138.750.000</td></tr>
+      <tr class="tr-total"><td colspan="3"><strong>TOTAL</strong></td><td class="num"><strong>676.816.940</strong></td><td></td><td class="num"><strong>10.215.600</strong></td><td class="num"><strong>676.383.000</strong></td></tr>
+    </tbody></table></div></div>
+  </div>
+
+  <!-- CASH PAYMENT -->
+  <div id="tab-cashpay" class="tab-content">
+    <div class="entry-header"><span>JURNAL KAS KELUAR — Cash Payment Journal</span></div>
+    <div class="entry-body">
+    <div class="tbl-wrap"><table><thead><tr><th>Tgl</th><th>No.Bukti</th><th>Kepada / Keterangan</th><th class="num">Dr: A/P (21201)</th><th>Akun Lain (Debit)</th><th class="num">Jumlah</th><th class="num">Cr: Cash (11101)</th></tr></thead>
+    <tbody>
+      <tr><td>01/12</td><td class="mono">01/BKK</td><td>Bagian Gaji — Gaji Nov 2025</td><td class="num">—</td><td><span class="tag tag-dr">21202</span> Accrued Exp</td><td class="num">16.000.000</td><td class="num">16.000.000</td></tr>
+      <tr><td>02/12</td><td class="mono">02/BKK</td><td>PT Kulkas Nusantara — Lunasi Utang 4 Nov</td><td class="num">233.100.000</td><td>—</td><td class="num">—</td><td class="num">233.100.000</td></tr>
+      <tr><td>05/12</td><td class="mono">03/BKK</td><td>PT Pendingin Makmur — Lunasi Utang 30 Nov</td><td class="num">135.420.000</td><td>—</td><td class="num">—</td><td class="num">135.420.000</td></tr>
+      <tr><td>19/12</td><td class="mono">04/BKK</td><td>PT Dingin Sejuk — Lunasi Utang 23 Nov</td><td class="num">213.120.000</td><td>—</td><td class="num">—</td><td class="num">213.120.000</td></tr>
+      <tr><td>24/12</td><td class="mono">05/BKK</td><td>Bank SMK — Angsuran+Bunga<br><small style="color:var(--muted)">Pokok Rp30jt + Bunga Rp3jt</small></td><td class="num">—</td><td><span class="tag tag-dr">22101+91001</span></td><td class="num">33.000.000</td><td class="num">33.000.000</td></tr>
+      <tr><td>27/12</td><td class="mono">06/BKK</td><td>Mitra Furniture — Meja Kasir<br><small style="color:var(--muted)">Peralatan Rp2.500.000 + Ongkir Rp100.000</small></td><td class="num">—</td><td><span class="tag tag-dr">12102</span> Office Equip</td><td class="num">2.600.000</td><td class="num">2.600.000</td></tr>
+      <tr class="tr-total"><td colspan="3"><strong>TOTAL</strong></td><td class="num"><strong>581.640.000</strong></td><td></td><td class="num"><strong>51.600.000</strong></td><td class="num"><strong>633.240.000</strong></td></tr>
+    </tbody></table></div></div>
+  </div>
+
+  <!-- GENERAL + PETTY -->
+  <div id="tab-general" class="tab-content">
+    <div class="entry-header"><span>JURNAL UMUM + JURNAL KAS KECIL</span></div>
+    <div class="entry-body">
+    <div style="font-size:11.5px;font-weight:600;color:var(--navy);margin-bottom:8px">Jurnal Umum (2 transaksi):</div>
+    <div class="tbl-wrap"><table><thead><tr><th>Tgl</th><th>No.Bukti</th><th>Akun & Keterangan</th><th>Ref</th><th class="num">Debit (Rp)</th><th class="num">Kredit (Rp)</th></tr></thead>
+    <tbody>
+      <tr><td>08/12</td><td class="mono">01/NK</td><td>Sales Returns (Retur Toko Frostora atas faktur 01/SJ)</td><td class="mono">41102</td><td class="num">4.793.000</td><td></td></tr>
+      <tr><td></td><td></td><td>&nbsp;&nbsp;&nbsp;Account Receivable (Toko Frostora)</td><td class="mono">11201</td><td></td><td class="num">4.793.000</td></tr>
+      <tr><td></td><td></td><td>Merchandise Inventory (pemulihan HPP retur)</td><td class="mono">11301</td><td class="num">4.357.000</td><td></td></tr>
+      <tr><td></td><td></td><td>&nbsp;&nbsp;&nbsp;Cost of Goods Sold</td><td class="mono">51101</td><td></td><td class="num">4.357.000</td></tr>
+      <tr style="background:#f5f3ee"><td colspan="4" style="color:var(--muted);font-size:11px;text-align:center">— — — — — — — —</td><td></td><td></td></tr>
+      <tr><td>23/12</td><td class="mono">3/ND/DS</td><td>Accounts Payable (PT Dingin Sejuk — retur beli)</td><td class="mono">21201</td><td class="num">4.357.000</td><td></td></tr>
+      <tr><td></td><td></td><td>&nbsp;&nbsp;&nbsp;Merchandise Inventory</td><td class="mono">11301</td><td></td><td class="num">4.357.000</td></tr>
+      <tr class="tr-total"><td colspan="4"><strong>Total Jurnal Umum</strong></td><td class="num"><strong>13.507.000</strong></td><td class="num"><strong>13.507.000</strong></td></tr>
+    </tbody></table></div>
+
+    <div style="font-size:11.5px;font-weight:600;color:var(--navy);margin:16px 0 8px">Jurnal Kas Kecil (3 transaksi — Dana Tidak Tetap):</div>
+    <div class="tbl-wrap"><table><thead><tr><th>Tgl</th><th>No.Bukti</th><th>Kepada / Keterangan</th><th>Akun Debit</th><th class="num">Jumlah (Rp)</th><th class="num">Cr: Kas Kecil</th></tr></thead>
+    <tbody>
+      <tr><td>09/12</td><td class="mono">01/VKK</td><td>PLN & PAM Jaya — Listrik+Air Nov</td><td><span class="tag tag-dr">21202</span> Accrued Expense</td><td class="num">1.000.000</td><td class="num">1.000.000</td></tr>
+      <tr><td>10/12</td><td class="mono">02/VKK</td><td>SPBU — Bensin Kendaraan</td><td><span class="tag tag-dr">61109</span> Others Op. Exp</td><td class="num">450.000</td><td class="num">450.000</td></tr>
+      <tr><td>17/12</td><td class="mono">03/VKK</td><td>HyperNet — Internet</td><td><span class="tag tag-dr">61101</span> Internet/Elec/Water</td><td class="num">400.000</td><td class="num">400.000</td></tr>
+      <tr class="tr-total"><td colspan="4"><strong>Total Kas Kecil</strong></td><td class="num"><strong>1.850.000</strong></td><td class="num"><strong>1.850.000</strong></td></tr>
+    </tbody></table></div>
+    <div style="margin-top:8px;font-size:11px;color:var(--muted)">Saldo Kas Kecil: Awal Rp2.000.000 − Rp1.850.000 = <strong>Rp150.000</strong></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PENYESUAIAN ===== -->
+<div id="panel-adjusting" class="panel">
+  <div class="page-hdr"><div><h1>Data Penyesuaian (AJE)</h1><div class="sub">Langkah 6 — 5 Bukti Memorial 31 Desember 2025</div></div></div>
+  <div class="tbl-wrap"><table><thead><tr><th>No.Bukti</th><th>Keterangan</th><th>Akun Debit</th><th>Akun Kredit</th><th class="num">Jumlah (Rp)</th></tr></thead>
+  <tbody>
+    <tr class="tr-section"><td colspan="5">BM-01/31 Des — Rekening Koran Bank</td></tr>
+    <tr><td class="mono">01/BM</td><td>Bunga bank Desember 2025</td><td class="mono">11101 Cash in Bank</td><td class="mono">81101 Interest Revenue</td><td class="num">1.200.000</td></tr>
+    <tr><td class="mono">01/BM</td><td>Biaya administrasi bank</td><td class="mono">91002 Bank Service Charge</td><td class="mono">11101 Cash in Bank</td><td class="num">320.000</td></tr>
+    <tr class="tr-section"><td colspan="5">BM-02/31 Des — Penyesuaian Aktiva Lancar</td></tr>
+    <tr><td class="mono">02/BM</td><td>Perlengkapan terpakai: Rp13.600.000 − Rp7.700.000</td><td class="mono">61102 Office Supplies Exp</td><td class="mono">11302 Office Supplies</td><td class="num">5.900.000</td></tr>
+    <tr><td class="mono">02/BM</td><td>Beban asuransi Desember 2025</td><td class="mono">61106 Insurance Expense</td><td class="mono">11401 Prepaid Insurance</td><td class="num">1.000.000</td></tr>
+    <tr><td class="mono">02/BM</td><td>Beban sewa Desember 2025</td><td class="mono">61107 Rent Expense</td><td class="mono">11402 Prepaid Rent</td><td class="num">2.000.000</td></tr>
+    <tr><td class="mono">02/BM</td><td>Cadangan kerugian piutang 2%×Rp306.508.000=Rp6.130.160; tambahan Rp3.630.160</td><td class="mono">61103 Bad Debts Exp</td><td class="mono">11202 Allow. Doubtful Debt</td><td class="num">3.630.160</td></tr>
+    <tr class="tr-section"><td colspan="5">BM-03/31 Des — Penyusutan Aset Tetap</td></tr>
+    <tr><td class="mono">03/BM</td><td>Penyusutan kendaraan Desember 2025</td><td class="mono">61104 Dep.Exp – Vehicle</td><td class="mono">12201 Accum.Dep – Vehicle</td><td class="num">2.500.000</td></tr>
+    <tr><td class="mono">03/BM</td><td>Penyusutan peralatan Desember 2025</td><td class="mono">61105 Dep.Exp – Equipment</td><td class="mono">12202 Accum.Dep – Equipment</td><td class="num">1.000.000</td></tr>
+    <tr class="tr-section"><td colspan="5">BM-04/31 Des — Utang Beban (Accrued Liabilities)</td></tr>
+    <tr><td class="mono">04/BM</td><td>Gaji karyawan Desember (dibayar 2 Jan 2026)</td><td class="mono">61108 Wages & Salaries</td><td class="mono">21202 Accrued Expense</td><td class="num">16.000.000</td></tr>
+    <tr><td class="mono">04/BM</td><td>Listrik Rp600.000 + Air Rp420.000 (dibayar 5 Jan 2026)</td><td class="mono">61101 Internet/Elec/Water</td><td class="mono">21202 Accrued Expense</td><td class="num">1.020.000</td></tr>
+    <tr class="tr-section"><td colspan="5">BM-05/31 Des — Pajak Penghasilan (PP 55/2022)</td></tr>
+    <tr><td class="mono">05/BM</td><td>PPh Final 0,5% × peredaran bruto Des<br><small style="color:var(--muted)">Basis: Sales 41101 Des = Rp403.137.000 × 0,5% = Rp2.015.685</small></td><td class="mono">91003 Income Tax Exp</td><td class="mono">21203 Income Tax Payable</td><td class="num">2.015.685</td></tr>
+    <tr class="tr-total"><td colspan="4"><strong>TOTAL JURNAL PENYESUAIAN</strong></td><td class="num"><strong>36.565.845</strong></td></tr>
+  </tbody></table></div>
+</div>
+
+<!-- ===== LAPORAN LABA RUGI ===== -->
+<div id="panel-rpt-lr" class="panel">
+  <div class="page-hdr">
+    <div><h1>Laporan Laba Rugi</h1><div class="sub">Siap Cetak — Periode Desember 2025</div></div>
+    <button class="btn btn-print" onclick="window.print()">🖨️ Cetak Laporan</button>
+  </div>
+  <div class="report-wrap">
+    <div class="report-head">
+      <div class="co">UD ES PRIMA</div>
+      <div class="rpt">Laporan Laba Rugi (Income Statement)</div>
+      <div class="per">Untuk Periode yang Berakhir 31 Desember 2025</div>
+    </div>
+    <div class="report-body">
+
+      <div class="rpt-section">
+        <div class="rpt-section-title">Pendapatan Usaha (41xxx)</div>
+        <div class="rpt-row indent-1"><div class="rpt-label">Sales of Merchandise <span style="font-family:var(--mono);font-size:11px;color:var(--muted)">(41101)</span></div><div class="rpt-amt2"></div><div class="rpt-amt">3.424.362.000</div></div>
+        <div class="rpt-row indent-1"><div class="rpt-label">Sales Returns <span style="font-family:var(--mono);font-size:11px;color:var(--muted)">(41102)</span></div><div class="rpt-amt2"></div><div class="rpt-amt num-neg">(30.693.000)</div></div>
+        <div class="rpt-row indent-1"><div class="rpt-label">Sales Discounts <span style="font-family:var(--mono);font-size:11px;color:var(--muted)">(41103)</span></div><div class="rpt-amt2"></div><div class="rpt-amt num-neg">(34.102.660)</div></div>
+        <div class="rpt-row indent-1"><div class="rpt-label">Freight Collected <span style="font-family:var(--mono);font-size:11px;color:var(--muted)">(41104)</span></div><div class="rpt-amt2"></div><div class="rpt-amt">25.140.000</div></div>
+        <div class="rpt-row sub-total indent-1"><div class="rpt-label" style="font-weight:700">TOTAL PENDAPATAN USAHA NETO</div><div class="rpt-amt2"></div><div class="rpt-amt" style="font-weight:700">3.384.706.340</div></div>
+      </div>
+
+      <div class="rpt-section">
+        <div class="rpt-section-title">Harga Pokok Penjualan (51xxx)</div>
+        <div class="rpt-row indent-1"><div class="rpt-label">Cost of Goods Sold <span style="font-family:var(--mono);font-size:11px;color:var(--muted)">(51101)</span></div><div class="rpt-amt2"></div><div class="rpt-amt num-neg">(2.538.664.850)</div></div>
+        <div class="rpt-row sub-total indent-1"><div class="rpt-label" style="font-weight:700;color:var(--green)">LABA KOTOR (GROSS PROFIT)</div><div class="rpt-amt2"></div><div class="rpt-amt num-pos" style="font-weight:700">846.041.490</div></div>
+      </div>
+
+      <div class="rpt-section">
+        <div class="rpt-section-title">Beban Operasional (61xxx)</div>
+        <div class="rpt-row indent-1"><div class="rpt-label">Internet, Listrik & Air <span style="font-family:var(--mono);font-size:11px;color:var(--muted)">(61101)</span></div><div class="rpt-amt2"></div><div class="rpt-amt">12.620.000</div></div>
+        <div class="rpt-row indent-1"><div class="rpt-label">Beban Perlengkapan Kantor <span style="font-family:var(--mono);font-size:11px;color:var(--muted)">(61102)</span></div><div class="rpt-amt2"></div><div class="rpt-amt">9.200.000</div></div>
+        <div class="rpt-row indent-1"><div class="rpt-label">Beban Kerugian Piutang <span style="font-family:var(--mono);font-size:11px;color:var(--muted)">(61103)</span></div><div class="rpt-amt2"></div><div class="rpt-amt">27.630.160</div></div>
+        <div class="rpt-row indent-1"><div class="rpt-label">Beban Penyusutan Kendaraan <span style="font-family:var(--mono);font-size:11px;color:var(--muted)">(61104)</span></div><div class="rpt-amt2"></div><div class="rpt-amt">30.000.000</div></div>
+        <div class="rpt-row indent-1"><div class="rpt-label">Beban Penyusutan Peralatan <span style="font-family:var(--mono);font-size:11px;color:var(--muted)">(61105)</span></div><div class="rpt-amt2"></div><div class="rpt-amt">12.000.000</div></div>
+        <div class="rpt-row indent-1"><div class="rpt-label">Beban Asuransi <span style="font-family:var(--mono);font-size:11px;color:var(--muted)">(61106)</span></div><div class="rpt-amt2"></div><div class="rpt-amt">23.000.000</div></div>
+        <div class="rpt-row indent-1"><div class="rpt-label">Beban Sewa <span style="font-family:var(--mono);font-size:11px;color:var(--muted)">(61107)</span></div><div class="rpt-amt2"></div><div class="rpt-amt">46.000.000</div></div>
+        <div class="rpt-row indent-1"><div class="rpt-label">Beban Gaji & Upah <span style="font-family:var(--mono);font-size:11px;color:var(--muted)">(61108)</span></div><div class="rpt-amt2"></div><div class="rpt-amt">64.000.000</div></div>
+        <div class="rpt-row indent-1"><div class="rpt-label">Beban Operasi Lainnya <span style="font-family:var(--mono);font-size:11px;color:var(--muted)">(61109)</span></div><div class="rpt-amt2"></div><div class="rpt-amt">16.450.000</div></div>
+        <div class="rpt-row indent-1"><div class="rpt-label">Beban Iklan <span style="font-family:var(--mono);font-size:11px;color:var(--muted)">(61110)</span></div><div class="rpt-amt2"></div><div class="rpt-amt">3.700.000</div></div>
+        <div class="rpt-row sub-total indent-1"><div class="rpt-label" style="font-weight:700">Total Beban Operasional</div><div class="rpt-amt2"></div><div class="rpt-amt num-neg" style="font-weight:700">(244.600.160)</div></div>
+        <div class="rpt-row sub-total indent-1"><div class="rpt-label" style="font-weight:700;color:var(--green)">LABA OPERASIONAL</div><div class="rpt-amt2"></div><div class="rpt-amt num-pos" style="font-weight:700">601.441.330</div></div>
+      </div>
+
+      <div class="rpt-section">
+        <div class="rpt-section-title">Pendapatan & Beban Lain-lain (81xxx / 91xxx)</div>
+        <div class="rpt-row indent-1"><div class="rpt-label">Pendapatan Bunga <span style="font-family:var(--mono);font-size:11px;color:var(--muted)">(81101)</span></div><div class="rpt-amt2"></div><div class="rpt-amt">6.200.000</div></div>
+        <div class="rpt-row indent-1"><div class="rpt-label">Pendapatan Denda Keterlambatan <span style="font-family:var(--mono);font-size:11px;color:var(--muted)">(81102)</span></div><div class="rpt-amt2"></div><div class="rpt-amt">1.767.225</div></div>
+        <div class="rpt-row indent-1"><div class="rpt-label">Beban Bunga <span style="font-family:var(--mono);font-size:11px;color:var(--muted)">(91001)</span></div><div class="rpt-amt2"></div><div class="rpt-amt num-neg">(4.300.000)</div></div>
+        <div class="rpt-row indent-1"><div class="rpt-label">Beban Administrasi Bank <span style="font-family:var(--mono);font-size:11px;color:var(--muted)">(91002)</span></div><div class="rpt-amt2"></div><div class="rpt-amt num-neg">(12.320.000)</div></div>
+        <div class="rpt-row sub-total indent-1"><div class="rpt-label" style="font-weight:700">Net Pendapatan/(Beban) Lain-lain</div><div class="rpt-amt2"></div><div class="rpt-amt num-neg" style="font-weight:700">(8.652.775)</div></div>
+      </div>
+
+      <hr class="rpt-divider">
+      <div class="rpt-row sub-total"><div class="rpt-label" style="font-weight:700">LABA SEBELUM PAJAK (EBT)</div><div class="rpt-amt2"></div><div class="rpt-amt" style="font-weight:700">592.788.555</div></div>
+
+      <div class="rpt-section">
+        <div class="rpt-section-title">Beban Pajak Penghasilan (91003)</div>
+        <div class="rpt-row indent-1"><div class="rpt-label">PPh Final Jan–Nov 2025 (kumulatif)</div><div class="rpt-amt2"></div><div class="rpt-amt">14.976.625</div></div>
+        <div class="rpt-row indent-1"><div class="rpt-label">PPh Final Desember 2025 (0,5%×Rp403.137.000)</div><div class="rpt-amt2"></div><div class="rpt-amt">2.015.685</div></div>
+        <div class="rpt-row sub-total indent-1"><div class="rpt-label" style="font-weight:700">Total Beban Pajak</div><div class="rpt-amt2"></div><div class="rpt-amt num-neg" style="font-weight:700">(16.992.310)</div></div>
+      </div>
+
+      <div class="profit-box">
+        <div><div class="plabel">🏆 LABA BERSIH (NET INCOME) — PROFIT</div><div style="font-size:11px;color:var(--green);margin-top:3px">Untuk Periode yang Berakhir 31 Desember 2025</div></div>
+        <div class="pamount">Rp 575.796.245</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== NERACA ===== -->
+<div id="panel-rpt-neraca" class="panel">
+  <div class="page-hdr">
+    <div><h1>Neraca (Balance Sheet)</h1><div class="sub">Laporan Posisi Keuangan — 31 Desember 2025</div></div>
+    <button class="btn btn-print" onclick="window.print()">🖨️ Cetak Laporan</button>
+  </div>
+  <div class="report-wrap">
+    <div class="report-head">
+      <div class="co">UD ES PRIMA</div>
+      <div class="rpt">Laporan Posisi Keuangan (Balance Sheet)</div>
+      <div class="per">Per 31 Desember 2025</div>
+    </div>
+    <div class="report-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+
+        <!-- ASET -->
+        <div>
+          <div class="rpt-section">
+            <div class="rpt-section-title">Aset Lancar (Current Assets)</div>
+            <div class="rpt-row indent-1"><div class="rpt-label">Kas di Bank (11101)</div><div class="rpt-amt">733.299.603</div></div>
+            <div class="rpt-row indent-1"><div class="rpt-label">Kas Kecil (11102)</div><div class="rpt-amt">150.000</div></div>
+            <div class="rpt-row indent-1"><div class="rpt-label">Piutang Dagang (11201)</div><div class="rpt-amt">306.508.000</div></div>
+            <div class="rpt-row indent-2"><div class="rpt-label">Cad. Kerugian Piutang (11202)</div><div class="rpt-amt num-neg">(6.130.160)</div></div>
+            <div class="rpt-row indent-2"><div class="rpt-label" style="font-weight:600">Net Piutang Dagang</div><div class="rpt-amt" style="font-weight:600">300.377.840</div></div>
+            <div class="rpt-row indent-1"><div class="rpt-label">Persediaan Barang (11301)</div><div class="rpt-amt">174.757.000</div></div>
+            <div class="rpt-row indent-1"><div class="rpt-label">Perlengkapan Kantor (11302)</div><div class="rpt-amt">7.700.000</div></div>
+            <div class="rpt-row indent-1"><div class="rpt-label">Asuransi Dibayar Dimuka (11401)</div><div class="rpt-amt">23.000.000</div></div>
+            <div class="rpt-row indent-1"><div class="rpt-label">Sewa Dibayar Dimuka (11402)</div><div class="rpt-amt">34.000.000</div></div>
+            <div class="rpt-row sub-total"><div class="rpt-label" style="font-weight:700">Total Aset Lancar</div><div class="rpt-amt" style="font-weight:700">1.273.284.443</div></div>
+          </div>
+          <div class="rpt-section">
+            <div class="rpt-section-title">Aset Tetap (Fixed Assets)</div>
+            <div class="rpt-row indent-1"><div class="rpt-label">Kendaraan (12101)</div><div class="rpt-amt">240.000.000</div></div>
+            <div class="rpt-row indent-2"><div class="rpt-label">Akm. Peny. Kendaraan (12201)</div><div class="rpt-amt num-neg">(205.000.000)</div></div>
+            <div class="rpt-row indent-2"><div class="rpt-label" style="font-weight:600">Net Kendaraan</div><div class="rpt-amt" style="font-weight:600">35.000.000</div></div>
+            <div class="rpt-row indent-1"><div class="rpt-label">Peralatan Kantor (12102)</div><div class="rpt-amt">50.600.000</div></div>
+            <div class="rpt-row indent-2"><div class="rpt-label">Akm. Peny. Peralatan (12202)</div><div class="rpt-amt num-neg">(17.000.000)</div></div>
+            <div class="rpt-row indent-2"><div class="rpt-label" style="font-weight:600">Net Peralatan</div><div class="rpt-amt" style="font-weight:600">33.600.000</div></div>
+            <div class="rpt-row sub-total"><div class="rpt-label" style="font-weight:700">Total Aset Tetap</div><div class="rpt-amt" style="font-weight:700">68.600.000</div></div>
+          </div>
+          <div class="rpt-row grand-total"><div class="rpt-label">TOTAL ASET</div><div class="rpt-amt">Rp 1.341.884.443</div></div>
+        </div>
+
+        <!-- LIABILITAS + EKUITAS -->
+        <div>
+          <div class="rpt-section">
+            <div class="rpt-section-title">Liabilitas Jangka Pendek</div>
+            <div class="rpt-row indent-1"><div class="rpt-label">Utang Dagang (21201)</div><div class="rpt-amt">339.846.000</div></div>
+            <div class="rpt-row indent-1"><div class="rpt-label">Utang Beban / Accrued (21202)</div><div class="rpt-amt">17.020.000</div></div>
+            <div class="rpt-row indent-1"><div class="rpt-label">Utang PPh — IT Payable (21203)</div><div class="rpt-amt">2.015.685</div></div>
+            <div class="rpt-row sub-total"><div class="rpt-label" style="font-weight:700">Total Liab. Jangka Pendek</div><div class="rpt-amt" style="font-weight:700">358.881.685</div></div>
+          </div>
+          <div class="rpt-section">
+            <div class="rpt-section-title">Liabilitas Jangka Panjang</div>
+            <div class="rpt-row indent-1"><div class="rpt-label">Utang Bank (22101)</div><div class="rpt-amt">170.000.000</div></div>
+            <div class="rpt-row sub-total"><div class="rpt-label" style="font-weight:700">Total Liabilitas</div><div class="rpt-amt" style="font-weight:700">528.881.685</div></div>
+          </div>
+          <div class="rpt-section">
+            <div class="rpt-section-title">Ekuitas Pemilik (Owner's Equity)</div>
+            <div class="rpt-row indent-1"><div class="rpt-label">Modal Awal / Capital (31101)</div><div class="rpt-amt">292.206.513</div></div>
+            <div class="rpt-row indent-1"><div class="rpt-label">Laba Bersih Periode 2025</div><div class="rpt-amt num-pos">575.796.245</div></div>
+            <div class="rpt-row indent-1"><div class="rpt-label">Prive (31102)</div><div class="rpt-amt num-neg">(55.000.000)</div></div>
+            <div class="rpt-row sub-total"><div class="rpt-label" style="font-weight:700">Total Ekuitas</div><div class="rpt-amt" style="font-weight:700">813.002.758</div></div>
+          </div>
+          <div class="rpt-row grand-total"><div class="rpt-label">TOTAL LIABILITAS + EKUITAS</div><div class="rpt-amt">Rp 1.341.884.443</div></div>
+          <div style="margin-top:10px">
+            <div class="balanced-chip" style="font-size:12px;padding:6px 14px">✓ NERACA SEIMBANG — Aset = Liabilitas + Ekuitas</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PERUBAHAN EKUITAS ===== -->
+<div id="panel-rpt-equity" class="panel">
+  <div class="page-hdr"><div><h1>Laporan Perubahan Ekuitas</h1><div class="sub">Statement of Changes in Owner's Equity</div></div><button class="btn btn-print" onclick="window.print()">🖨️ Cetak</button></div>
+  <div class="report-wrap">
+    <div class="report-head">
+      <div class="co">UD ES PRIMA</div>
+      <div class="rpt">Laporan Perubahan Ekuitas</div>
+      <div class="per">Untuk Periode yang Berakhir 31 Desember 2025</div>
+    </div>
+    <div class="report-body">
+      <div class="rpt-section">
+        <div class="rpt-section-title">Perubahan Modal Pemilik</div>
+        <div class="rpt-row"><div class="rpt-label">Modal Awal (Per 1 Januari 2025)</div><div class="rpt-amt2"></div><div class="rpt-amt">292.206.513</div></div>
+        <div class="rpt-row indent-1"><div class="rpt-label">+ Laba Bersih Tahun 2025</div><div class="rpt-amt2"></div><div class="rpt-amt num-pos">575.796.245</div></div>
+        <div class="rpt-row sub-total"><div class="rpt-label" style="font-weight:700">Sub-total Sebelum Prive</div><div class="rpt-amt2"></div><div class="rpt-amt" style="font-weight:700">868.002.758</div></div>
+        <div class="rpt-row indent-1"><div class="rpt-label">− Prive / Pengambilan Pemilik (31102)</div><div class="rpt-amt2"></div><div class="rpt-amt num-neg">(55.000.000)</div></div>
+      </div>
+      <div class="profit-box" style="margin-top:16px">
+        <div><div class="plabel">Modal Akhir (Per 31 Desember 2025)</div><div style="font-size:11px;color:var(--green);margin-top:3px">Ekuitas meningkat Rp520.795.732 dari modal awal</div></div>
+        <div class="pamount">Rp 813.002.758</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ARUS KAS ===== -->
+<div id="panel-rpt-cf" class="panel">
+  <div class="page-hdr"><div><h1>Laporan Arus Kas</h1><div class="sub">Statement of Cash Flows — Metode Langsung</div></div><button class="btn btn-print" onclick="window.print()">🖨️ Cetak</button></div>
+  <div class="report-wrap">
+    <div class="report-head">
+      <div class="co">UD ES PRIMA</div>
+      <div class="rpt">Laporan Arus Kas (Statement of Cash Flows)</div>
+      <div class="per">Untuk Periode Desember 2025 — Metode Langsung (Direct Method)</div>
+    </div>
+    <div class="report-body">
+      <div class="rpt-section">
+        <div class="rpt-section-title">A. Arus Kas dari Aktivitas Operasi</div>
+        <div class="rpt-row indent-1"><div class="rpt-label">Penerimaan dari pelanggan</div><div class="rpt-amt">676.816.940</div></div>
+        <div class="rpt-row indent-1"><div class="rpt-label">Penerimaan bunga bank</div><div class="rpt-amt">1.200.000</div></div>
+        <div class="rpt-row indent-1"><div class="rpt-label">Pembayaran kepada pemasok</div><div class="rpt-amt num-neg">(581.640.000)</div></div>
+        <div class="rpt-row indent-1"><div class="rpt-label">Pembayaran gaji karyawan</div><div class="rpt-amt num-neg">(16.000.000)</div></div>
+        <div class="rpt-row indent-1"><div class="rpt-label">Pembayaran beban operasional (kas kecil)</div><div class="rpt-amt num-neg">(1.850.000)</div></div>
+        <div class="rpt-row indent-1"><div class="rpt-label">Pembayaran beban bunga</div><div class="rpt-amt num-neg">(3.000.000)</div></div>
+        <div class="rpt-row indent-1"><div class="rpt-label">Pembayaran administrasi bank</div><div class="rpt-amt num-neg">(320.000)</div></div>
+        <div class="rpt-row sub-total"><div class="rpt-label" style="font-weight:700;color:var(--green)">Arus Kas Bersih – Operasi</div><div class="rpt-amt num-pos" style="font-weight:700">75.206.940</div></div>
+      </div>
+      <div class="rpt-section">
+        <div class="rpt-section-title">B. Arus Kas dari Aktivitas Investasi</div>
+        <div class="rpt-row indent-1"><div class="rpt-label">Pembelian peralatan kantor (meja kasir)</div><div class="rpt-amt num-neg">(2.600.000)</div></div>
+        <div class="rpt-row sub-total"><div class="rpt-label" style="font-weight:700">Arus Kas Bersih – Investasi</div><div class="rpt-amt num-neg" style="font-weight:700">(2.600.000)</div></div>
+      </div>
+      <div class="rpt-section">
+        <div class="rpt-section-title">C. Arus Kas dari Aktivitas Pendanaan</div>
+        <div class="rpt-row indent-1"><div class="rpt-label">Pembayaran pokok utang bank</div><div class="rpt-amt num-neg">(30.000.000)</div></div>
+        <div class="rpt-row sub-total"><div class="rpt-label" style="font-weight:700">Arus Kas Bersih – Pendanaan</div><div class="rpt-amt num-neg" style="font-weight:700">(30.000.000)</div></div>
+      </div>
+      <hr class="rpt-divider">
+      <div class="rpt-row sub-total"><div class="rpt-label" style="font-weight:700">Kenaikan Neto Kas Desember 2025</div><div class="rpt-amt num-pos" style="font-weight:700">42.606.940</div></div>
+      <div class="rpt-row indent-1"><div class="rpt-label">Saldo Kas Awal (1 Desember 2025)</div><div class="rpt-amt">690.842.663</div></div>
+      <div class="profit-box" style="margin-top:12px">
+        <div><div class="plabel">Saldo Kas Akhir (31 Desember 2025)</div><div style="font-size:11px;color:var(--green);margin-top:3px">Kas di Bank + Kas Kecil = Rp733.299.603 + Rp150.000</div></div>
+        <div class="pamount">Rp 733.449.603</div>
+      </div>
+      <div style="margin-top:10px;font-size:11.5px;color:var(--muted);background:var(--bg);border-radius:6px;padding:10px">
+        ℹ️ <strong>Verifikasi:</strong> Saldo Kas Akhir sesuai dengan saldo di Neraca: Kas di Bank Rp733.299.603 + Kas Kecil Rp150.000 = <strong>Rp733.449.603</strong> ✅
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end .content -->
+</div><!-- end .layout -->
+
+<div class="status-bar">
+  <span><span class="status-dot"></span>Database: Terhubung</span>
+  <span>Perusahaan: UD ES PRIMA</span>
+  <span>Pengguna: Lina Permata, SE</span>
+  <span>Periode: Desember 2025</span>
+  <span style="margin-left:auto">Terakhir disimpan: 31/12/2025 23:59</span>
+</div>
+
+<script>
+const COA = [
+  ["11101","Cash In Bank","Kas Di Bank","Aset Lancar","D"],
+  ["11102","Petty Cash","Kas Kecil","Aset Lancar","D"],
+  ["11201","Account Receivable","Piutang Dagang","Aset Lancar","D"],
+  ["11202","Allowance For Doubtful Debt","Cad. Kerugian Piutang","Kontra Aset","C"],
+  ["11301","Merchandise Inventory","Persediaan Barang","Aset Lancar","D"],
+  ["11302","Office Supplies","Perlengkapan Kantor","Aset Lancar","D"],
+  ["11401","Prepaid Insurance","Asuransi Dibayar Dimuka","Aset Lancar","D"],
+  ["11402","Prepaid Rent","Sewa Dibayar Dimuka","Aset Lancar","D"],
+  ["12101","Vehicle","Kendaraan","Aset Tetap","D"],
+  ["12201","Accum. Dep. – Vehicle","Akm. Penyusutan Kendaraan","Kontra Aset","C"],
+  ["12102","Office Equipment At Cost","Peralatan Kantor","Aset Tetap","D"],
+  ["12202","Accum. Dep. – Equipment","Akm. Penyusutan Peralatan","Kontra Aset","C"],
+  ["21201","Accounts Payable","Utang Dagang","Liabilitas Lancar","C"],
+  ["21202","Accrued Expense","Utang Beban","Liabilitas Lancar","C"],
+  ["21203","Income Tax Payable","Utang PPh","Liabilitas Lancar","C"],
+  ["22101","Bank Loans","Utang Bank","Liabilitas Jk. Panjang","C"],
+  ["31101","Capital","Modal Pemilik","Ekuitas","C"],
+  ["31102","Prive","Pengambilan Pemilik","Kontra Ekuitas","D"],
+  ["32001","Income Summary","Ikhtisar Laba Rugi","Ekuitas","C"],
+  ["41101","Sales Of Merchandise","Penjualan Barang","Pendapatan Usaha","C"],
+  ["41102","Sales Returns","Retur Penjualan","Kontra Pendapatan","D"],
+  ["41103","Sales Discounts","Potongan Penjualan","Kontra Pendapatan","D"],
+  ["41104","Freight Collected","Pendapatan Angkut","Pendapatan Usaha","C"],
+  ["51101","Cost Of Goods Sold","HPP","Harga Pokok","D"],
+  ["61101","Internet, Electricity & Water","Beban Internet/Listrik/Air","Beban Operasional","D"],
+  ["61102","Office Supplies Expense","Beban Perlengkapan","Beban Operasional","D"],
+  ["61103","Bad Debts Expense","Beban Kerugian Piutang","Beban Operasional","D"],
+  ["61104","Depreciation Exp – Vehicle","Beban Penyusutan Kendaraan","Beban Operasional","D"],
+  ["61105","Depreciation Exp – Equipment","Beban Penyusutan Peralatan","Beban Operasional","D"],
+  ["61106","Insurance Expense","Beban Asuransi","Beban Operasional","D"],
+  ["61107","Rent Expense","Beban Sewa","Beban Operasional","D"],
+  ["61108","Wages & Salaries","Beban Gaji & Upah","Beban Operasional","D"],
+  ["61109","Others Operating Expense","Beban Operasi Lainnya","Beban Operasional","D"],
+  ["61110","Advertising Expense","Beban Iklan","Beban Operasional","D"],
+  ["81101","Interest Revenue","Pendapatan Bunga","Pendapatan Lain","C"],
+  ["81102","Late Fees Collected","Pendapatan Denda","Pendapatan Lain","C"],
+  ["81103","Other Revenue","Pendapatan Lain-lain","Pendapatan Lain","C"],
+  ["91001","Interest Expense","Beban Bunga","Beban Lain","D"],
+  ["91002","Bank Service Charge","Beban Adm Bank","Beban Lain","D"],
+  ["91003","Income Tax Expense","Beban PPh","Beban Lain","D"],
+];
+const coaBody = document.getElementById('coa-body');
+COA.forEach((a,i)=>{
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td class="mono">${a[0]}</td><td><strong>${a[1]}</strong></td><td style="color:var(--muted)">${a[2]}</td><td style="text-align:center"><span class="tag tag-pend">${a[3]}</span></td><td style="text-align:center"><span class="tag ${a[4]==='D'?'tag-dr':'tag-cr'}">${a[4]}</span></td>`;
+  coaBody.appendChild(tr);
+});
+
+const OB = [
+  ["11101","Cash In Bank",688842663,0],["11102","Petty Cash",2000000,0],
+  ["11201","Account Receivable",588300000,0],["11202","Allow. Doubtful Debt",0,2500000],
+  ["11301","Merchandise Inventory",197019000,0],["11302","Office Supplies",13600000,0],
+  ["11401","Prepaid Insurance",24000000,0],["11402","Prepaid Rent",36000000,0],
+  ["12101","Vehicle",240000000,0],["12201","Accum. Dep. – Vehicle",0,202500000],
+  ["12102","Office Equipment",48000000,0],["12202","Accum. Dep. – Equipment",0,16000000],
+  ["21201","Accounts Payable",0,581640000],["21202","Accrued Expense",0,17000000],
+  ["22101","Bank Loans",0,200000000],["31101","Capital",0,292206513],
+  ["31102","Prive",55000000,0],["41101","Sales Of Merchandise",0,3021225000],
+  ["41102","Sales Returns",25900000,0],["41103","Sales Discounts",28678000,0],
+  ["41104","Freight Collected",0,24100000],["51101","Cost Of Goods Sold",2176556850,0],
+  ["61101","Internet/Elec/Water",11200000,0],["61102","Office Supplies Exp",3300000,0],
+  ["61103","Bad Debts Expense",24000000,0],["61104","Dep.Exp – Vehicle",27500000,0],
+  ["61105","Dep.Exp – Equipment",11000000,0],["61106","Insurance Expense",22000000,0],
+  ["61107","Rent Expense",44000000,0],["61108","Wages & Salaries",48000000,0],
+  ["61109","Others Op. Expense",16000000,0],["61110","Advertising Expense",3700000,0],
+  ["81101","Interest Revenue",0,5000000],["81102","Late Fees Collected",0,701625],
+  ["91001","Interest Expense",1300000,0],["91002","Bank Service Charge",12000000,0],
+  ["91003","Income Tax Expense",14976625,0],
+];
+const fmt = n => n ? n.toLocaleString('id-ID') : '—';
+const obBody = document.getElementById('ob-body');
+let td=0,tk=0;
+OB.forEach((a,i)=>{
+  td+=a[2]; tk+=a[3];
+  const tr=document.createElement('tr');
+  tr.innerHTML=`<td class="mono">${a[0]}</td><td>${a[1]}</td><td class="num">${a[2]?fmt(a[2]):'—'}</td><td class="num">${a[3]?fmt(a[3]):'—'}</td>`;
+  obBody.appendChild(tr);
+});
+document.getElementById('ob-total-d').textContent=fmt(td);
+document.getElementById('ob-total-k').textContent=fmt(tk);
+
+function showPanel(id){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+function switchTab(btn,tabId){
+  const parent=btn.closest('.panel');
+  parent.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  parent.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(tabId).classList.add('active');
+}
+</script>
+</body></html>
